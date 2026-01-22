@@ -16,6 +16,11 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        // Create bootstrap logger for startup
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .CreateBootstrapLogger();
+
         try
         {
             Log.Information("Starting web application");
@@ -60,8 +65,10 @@ public class Program
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
-            app.UseHttpsRedirection();
+            else
+            {
+                app.UseHttpsRedirection();
+            }
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -70,14 +77,18 @@ public class Program
 
             app.MapControllers();
 
+            Log.Information("Application started successfully");
+
             app.Run();
         }
         catch (Exception ex)
         {
             Log.Fatal(ex, "Application terminated unexpectedly");
+            throw; // Re-throw to ensure non-zero exit code
         }
         finally
         {
+            Log.Information("Shutting down application");
             Log.CloseAndFlush();
         }
     }
