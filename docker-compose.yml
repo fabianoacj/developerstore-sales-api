@@ -1,0 +1,26 @@
+services:
+  developerstore_sales_webapi:
+    container_name: developerstore_sales_webapi
+    image: ${DOCKER_REGISTRY-}developerstore_sales_webapi
+    build:
+      context: .
+      dockerfile: src/DeveloperStore.WebApi/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__DefaultConnection=Host=developerstore_sales_database;Port=5432;Database=developerstore_sales;Username=developer;Password=ev@luAt10n
+    ports:
+      - "8080:8080"
+    depends_on:
+      - developerstore_sales_database
+
+  developerstore_sales_database:
+    container_name: developerstore_sales_database
+    image: postgres:13
+    environment:
+      POSTGRES_DB: developerstore_sales
+      POSTGRES_USER: developer
+      POSTGRES_PASSWORD: ev@luAt10n
+    ports:
+      - "5432:5432"
+    restart: unless-stopped

@@ -1,0 +1,35 @@
+<Solution>
+  <Folder Name="/Adapters/" />
+  <Folder Name="/Adapters/Driven/" />
+  <Folder Name="/Adapters/Driven/Infrastructure/">
+    <Project Path="src/DeveloperStore.ORM/DeveloperStore.ORM.csproj" Id="7d168e43-4d04-43b9-99cf-74cbe20d3343" />
+  </Folder>
+  <Folder Name="/Adapters/Drivers/" />
+  <Folder Name="/Adapters/Drivers/WebApi/">
+    <Project Path="src/DeveloperStore.WebApi/DeveloperStore.WebApi.csproj" Id="44282ea9-c82d-48af-bf82-62468ac4f9de" />
+  </Folder>
+  <Folder Name="/Core/" />
+  <Folder Name="/Core/Application/">
+    <Project Path="src/DeveloperStore.Application/DeveloperStore.Application.csproj" Id="cd5addc3-765a-4823-b492-b20c199bda21" />
+  </Folder>
+  <Folder Name="/Core/Domain/">
+    <Project Path="src/DeveloperStore.Domain/DeveloperStore.Domain.csproj" Id="cf15f6d6-13a7-431c-ba70-7d575aae48f6" />
+  </Folder>
+  <Folder Name="/Crosscutting/">
+    <Project Path="src/DeveloperStore.Common/DeveloperStore.Common.csproj" Id="7fdbfe1b-112b-437f-8677-37f6fbb1fb7d" />
+    <Project Path="src/DeveloperStore.IoC/DeveloperStore.IoC.csproj" Id="65c1e3d5-b253-4899-8232-14ed1c991dc2" />
+  </Folder>
+  <Folder Name="/Tests/" />
+  <Folder Name="/Tests/Functional/">
+    <Project Path="tests/DeveloperStore.Functional/DeveloperStore.Functional.csproj" Id="98e0a167-2dd3-4873-a1ab-176bda75f934" />
+  </Folder>
+  <Folder Name="/Tests/Integration/">
+    <Project Path="tests/DeveloperStore.Integration/DeveloperStore.Integration.csproj" Id="e2925300-edec-40aa-a706-b842fb86a435" />
+  </Folder>
+  <Folder Name="/Tests/Unit/">
+    <Project Path="tests/DeveloperStore.Unit/DeveloperStore.Unit.csproj" Id="1693466a-e78b-454d-8801-d8cad0f128f1" />
+  </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+</Solution>
