@@ -1,36 +1,86 @@
+using DeveloperStore.Common.HealthChecks;
+using DeveloperStore.Common.Logging;
+using DeveloperStore.IoC;
+using DeveloperStore.WebApi.Middleware;
+using Serilog;
 
-namespace DeveloperStore.WebApi
+namespace DeveloperStore.WebApi;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        // Create bootstrap logger for startup
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .CreateBootstrapLogger();
+
+        try
         {
+            Log.Information("Starting DeveloperStore Sales API");
+
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Add Serilog logging
+            builder.AddDefaultLogging();
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            // Register all dependencies through IoC (includes AutoMapper and MediatR)
+            builder.RegisterDependencies();
+
+            // Configure CORS for development
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
+
+            // Add health checks
+            builder.AddBasicHealthChecks();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Add validation exception middleware
+            app.UseMiddleware<ValidationExceptionMiddleware>();
+
+            // Configure the HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "DeveloperStore Sales API V1");
+                    c.RoutePrefix = string.Empty; // Swagger at root
+                });
+                app.UseCors("AllowAll");
+            }
+            else
+            {
+                app.UseHttpsRedirection();
             }
 
-            app.UseHttpsRedirection();
+            // Add health checks endpoint
+            app.UseBasicHealthChecks();
 
             app.UseAuthorization();
 
-
             app.MapControllers();
+
+            Log.Information("DeveloperStore Sales API started successfully");
 
             app.Run();
         }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Application terminated unexpectedly");
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
     }
 }
+
