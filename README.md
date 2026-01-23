@@ -16,21 +16,22 @@ Sales Management API built with .NET 8.0, implementing Domain-Driven Design (DDD
 
 #### Option 1: Using Docker Compose (CLI)
 
-1. Navigate to the project root directory:
-   ```bash
-   cd c:\Users\fabia\dev\developerstore-sales-api
-   ```
+1. Build the solution
+   
+2. Navigate to the project root directory
 
-2. Start the containers:
+3. Start the containers:
    ```bash
    docker-compose up -d
    ```
 
-3. The API will be available at `http://localhost:8080`, Swagger UI: `http://localhost:8080/swagger`
+4. The API will be available at `http://localhost:8080`, Swagger UI: `http://localhost:8080/swagger`
 
 #### Option 2: Using Visual Studio
 
-Set `docker-compose` as the startup project and run it.
+1. Build the solution
+
+2. Set `docker-compose` as the startup project and run it.
 
 The API will start with all required dependencies (PostgreSQL, MongoDB, Redis)
 
