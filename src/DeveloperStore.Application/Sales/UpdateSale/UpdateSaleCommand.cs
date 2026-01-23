@@ -13,9 +13,19 @@ public class UpdateSaleCommand : IRequest<UpdateSaleResult>
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the sale date.
+    /// Gets or sets the customer name.
     /// </summary>
-    public DateTime SaleDate { get; set; }
+    public string CustomerName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the customer email.
+    /// </summary>
+    public string CustomerEmail { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the customer phone.
+    /// </summary>
+    public string? CustomerPhone { get; set; }
 
     /// <summary>
     /// Gets or sets the list of sale items.

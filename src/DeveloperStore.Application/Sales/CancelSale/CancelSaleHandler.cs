@@ -1,6 +1,8 @@
-using FluentValidation;
 using MediatR;
 using DeveloperStore.Domain.Repositories;
+using DeveloperStore.Domain.Exceptions;
+using DeveloperStore.Domain.Events;
+using DeveloperStore.Application.Events;
 
 namespace DeveloperStore.Application.Sales.CancelSale;
 
@@ -10,14 +12,17 @@ namespace DeveloperStore.Application.Sales.CancelSale;
 public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleResult>
 {
     private readonly ISaleRepository _saleRepository;
+    private readonly IEventPublisher _eventPublisher;
 
     /// <summary>
     /// Initializes a new instance of CancelSaleHandler.
     /// </summary>
     /// <param name="saleRepository">The sale repository.</param>
-    public CancelSaleHandler(ISaleRepository saleRepository)
+    /// <param name="eventPublisher">The event publisher.</param>
+    public CancelSaleHandler(ISaleRepository saleRepository, IEventPublisher eventPublisher)
     {
         _saleRepository = saleRepository;
+        _eventPublisher = eventPublisher;
     }
 
     /// <summary>
@@ -28,19 +33,16 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
     /// <returns>The cancellation result.</returns>
     public async Task<CancelSaleResult> Handle(CancelSaleCommand command, CancellationToken cancellationToken)
     {
-        var validator = new CancelSaleValidator();
-        var validationResult = await validator.ValidateAsync(command, cancellationToken);
-
-        if (!validationResult.IsValid)
-            throw new ValidationException(validationResult.Errors);
-
         var sale = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
         if (sale == null)
-            throw new InvalidOperationException($"Sale with ID {command.Id} not found");
+            throw new NotFoundException("Sale", command.Id);
 
         sale.Cancel();
 
         await _saleRepository.UpdateAsync(sale, cancellationToken);
+
+        // Publish SaleCancelled event
+        await _eventPublisher.PublishAsync(new SaleCancelledEvent(sale), cancellationToken);
 
         return new CancelSaleResult
         {

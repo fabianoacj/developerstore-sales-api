@@ -67,6 +67,9 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
 
         builder.Ignore(s => s.TotalAmount);
         builder.Ignore(s => s.IsCancelled);
+        
+        // Ignore the public Items property - maping the backing field _items
+        builder.Ignore(s => s.Items);
 
         builder.Property(s => s.CreatedAt)
             .IsRequired();

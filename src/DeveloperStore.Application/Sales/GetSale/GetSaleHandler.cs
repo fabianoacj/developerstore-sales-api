@@ -1,7 +1,7 @@
 using AutoMapper;
-using FluentValidation;
 using MediatR;
 using DeveloperStore.Domain.Repositories;
+using DeveloperStore.Domain.Exceptions;
 
 namespace DeveloperStore.Application.Sales.GetSale;
 
@@ -32,15 +32,9 @@ public class GetSaleHandler : IRequestHandler<GetSaleCommand, GetSaleResult>
     /// <returns>The sale details.</returns>
     public async Task<GetSaleResult> Handle(GetSaleCommand command, CancellationToken cancellationToken)
     {
-        var validator = new GetSaleValidator();
-        var validationResult = await validator.ValidateAsync(command, cancellationToken);
-
-        if (!validationResult.IsValid)
-            throw new ValidationException(validationResult.Errors);
-
         var sale = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
         if (sale == null)
-            throw new InvalidOperationException($"Sale with ID {command.Id} not found");
+            throw new NotFoundException("Sale", command.Id);
 
         var result = _mapper.Map<GetSaleResult>(sale);
         return result;

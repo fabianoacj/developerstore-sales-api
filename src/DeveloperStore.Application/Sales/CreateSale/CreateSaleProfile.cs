@@ -36,6 +36,12 @@ public class CreateSaleProfile : Profile
 
         CreateMap<Sale, CreateSaleResult>()
             .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.TotalAmount))
-            .ForMember(dest => dest.ItemCount, opt => opt.MapFrom(src => src.Items.Count));
+            .ForMember(dest => dest.ItemCount, opt => opt.MapFrom(src => src.Items.Count))
+            .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.Customer.Id))
+            .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
+
+        CreateMap<SaleItem, CreateSaleItemResult>()
+            .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Product.Id))
+            .ForMember(dest => dest.ProductTitle, opt => opt.MapFrom(src => src.Product.Title));
     }
 }

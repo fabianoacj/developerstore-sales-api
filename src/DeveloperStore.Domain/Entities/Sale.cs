@@ -104,6 +104,11 @@ public class Sale : BaseEntity
             throw new DomainException($"Item with ID {itemId} not found in this sale.");
         }
 
+        if (item.IsCancelled)
+        {
+            throw new DomainException($"Item with ID {itemId} is already cancelled.");
+        }
+
         item.Cancel();
         UpdatedAt = DateTime.UtcNow;
     }

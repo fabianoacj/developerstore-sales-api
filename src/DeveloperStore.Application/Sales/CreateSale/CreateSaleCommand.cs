@@ -14,16 +14,6 @@ namespace DeveloperStore.Application.Sales.CreateSale;
 public class CreateSaleCommand : IRequest<CreateSaleResult>
 {
     /// <summary>
-    /// Gets or sets the sale number.
-    /// </summary>
-    public string SaleNumber { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the sale date.
-    /// </summary>
-    public DateTime SaleDate { get; set; }
-
-    /// <summary>
     /// Gets or sets the customer ID.
     /// </summary>
     public Guid CustomerId { get; set; }

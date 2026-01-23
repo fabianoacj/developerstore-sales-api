@@ -112,14 +112,11 @@ public class SaleItem : BaseEntity
     /// <summary>
     /// Calculates the total amount for this item.
     /// Formula: (UnitPrice * Quantity) * (1 - Discount/100)
+    /// Note: Amount is preserved even when cancelled for historical and audit purposes.
+    /// Use IsCancelled or Status properties to filter cancelled items if needed.
     /// </summary>
     private decimal CalculateTotalAmount()
     {
-        if (IsCancelled)
-        {
-            return 0m;
-        }
-
         var subtotal = UnitPrice * Quantity;
         var discountAmount = subtotal * (Discount / 100m);
         return subtotal - discountAmount;

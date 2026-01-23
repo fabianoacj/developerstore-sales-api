@@ -3,7 +3,7 @@ using FluentValidation;
 namespace DeveloperStore.Domain.Validation;
 
 /// <summary>
-/// Validator for phone numbers in international format.
+/// Validator for phone numbers.
 /// </summary>
 public class PhoneValidator : AbstractValidator<string?>
 {
@@ -16,9 +16,7 @@ public class PhoneValidator : AbstractValidator<string?>
         {
             RuleFor(phone => phone)
                 .MaximumLength(20)
-                .WithMessage("Phone number must not exceed 20 characters.")
-                .Matches(@"^\+?[1-9]\d{1,14}$")
-                .WithMessage("Phone number must be in international format (+X XXXXXXXXXX).");
+                .WithMessage("Phone number must not exceed 20 characters.");
         });
     }
 }

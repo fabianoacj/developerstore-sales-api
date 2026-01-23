@@ -17,11 +17,15 @@ public class UpdateSaleValidator : AbstractValidator<UpdateSaleCommand>
             .NotEmpty()
             .WithMessage("Sale ID is required");
 
-        RuleFor(x => x.SaleDate)
+        RuleFor(x => x.CustomerName)
             .NotEmpty()
-            .WithMessage("Sale date is required")
-            .LessThanOrEqualTo(DateTime.UtcNow)
-            .WithMessage("Sale date cannot be in the future");
+            .WithMessage("Customer name is required");
+
+        RuleFor(x => x.CustomerEmail)
+            .NotEmpty()
+            .WithMessage("Customer email is required")
+            .EmailAddress()
+            .WithMessage("Customer email must be valid");
 
         RuleFor(x => x.Items)
             .NotEmpty()
