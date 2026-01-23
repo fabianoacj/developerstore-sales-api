@@ -1,86 +1,173 @@
-# Developer Evaluation Project
+# DeveloperStore Sales API
 
-`READ CAREFULLY`
+Sales Management API built with .NET 8.0, implementing Domain-Driven Design (DDD) principles and CQRS pattern using MediatR.
 
-## Instructions
-**The test below will have up to 7 calendar days to be delivered from the date of receipt of this manual.**
+## Getting Started
 
-- The code must be versioned in a public Github repository and a link must be sent for evaluation once completed
-- Upload this template to your repository and start working from it
-- Read the instructions carefully and make sure all requirements are being addressed
-- The repository must provide instructions on how to configure, execute and test the project
-- Documentation and overall organization will also be taken into consideration
+### Prerequisites
 
-## Use Case
-**You are a developer on the DeveloperStore team. Now we need to implement the API prototypes.**
+- [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [PostgreSQL](https://www.postgresql.org/) (if running without Docker)
+- [MongoDB](https://www.mongodb.com/) (if running without Docker)
+- [Redis](https://redis.io/) (if running without Docker)
 
-As we work with `DDD`, to reference entities from other domains, we use the `External Identities` pattern with denormalization of entity descriptions.
+### Running the Project
 
-Therefore, you will write an API (complete CRUD) that handles sales records. The API needs to be able to inform:
+#### Option 1: Using Docker Compose (CLI)
 
-* Sale number
-* Date when the sale was made
-* Customer
-* Total sale amount
-* Branch where the sale was made
-* Products
-* Quantities
-* Unit prices
-* Discounts
-* Total amount for each item
-* Cancelled/Not Cancelled
+1. Navigate to the project root directory:
+   ```bash
+   cd c:\Users\fabia\dev\developerstore-sales-api
+   ```
 
-It's not mandatory, but it would be a differential to build code for publishing events of:
-* SaleCreated
-* SaleModified
-* SaleCancelled
-* ItemCancelled
+2. Start the containers:
+   ```bash
+   docker-compose up -d
+   ```
 
-If you write the code, **it's not required** to actually publish to any Message Broker. You can log a message in the application log or however you find most convenient.
+3. The API will be available at `http://localhost:8080`, Swagger UI: `http://localhost:8080/swagger`
 
-### Business Rules
+#### Option 2: Using Visual Studio
 
-* Purchases above 4 identical items have a 10% discount
-* Purchases between 10 and 20 identical items have a 20% discount
-* It's not possible to sell above 20 identical items
-* Purchases below 4 items cannot have a discount
+Set `docker-compose` as the startup project and run it.
 
-These business rules define quantity-based discounting tiers and limitations:
+The API will start with all required dependencies (PostgreSQL, MongoDB, Redis)
 
-1. Discount Tiers:
-   - 4+ items: 10% discount
-   - 10-20 items: 20% discount
+### Running Migrations
 
-2. Restrictions:
-   - Maximum limit: 20 items per product
-   - No discounts allowed for quantities below 4 items
+After starting the application, you need to apply database migrations to create the PostgreSQL schema:
 
-## Overview
-This section provides a high-level overview of the project and the various skills and competencies it aims to assess for developer candidates. 
+```bash
+dotnet ef database update --project src/DeveloperStore.ORM --startup-project src/DeveloperStore.WebApi
+```
 
-See [Overview](/.doc/overview.md)
+This command will:
+- Create the database if it doesn't exist
+- Apply all pending migrations
+- Set up the required tables and relationships
 
-## Tech Stack
-This section lists the key technologies used in the project, including the backend, testing, frontend, and database components. 
+## Testing the API
 
-See [Tech Stack](/.doc/tech-stack.md)
+**Swagger:**
+- Go to `http://localhost:8080/swagger` in your browser.
+- Click "Try it out" on any endpoint and execute requests directly.
 
-## Frameworks
-This section outlines the frameworks and libraries that are leveraged in the project to enhance development productivity and maintainability. 
+**Postman:**
+- Import `DeveloperStore Sales API.postman_collection.json` into Postman.
+- Use the pre-configured requests to test all endpoints.
 
-See [Frameworks](/.doc/frameworks.md)
+If you only want to run and test the project, you can stop here. The sections below provide details on architecture, techniques, and design decisions for those interested.
 
-<!-- 
-## API Structure
-This section includes links to the detailed documentation for the different API resources:
-- [API General](./docs/general-api.md)
-- [Products API](/.doc/products-api.md)
-- [Carts API](/.doc/carts-api.md)
-- [Users API](/.doc/users-api.md)
-- [Auth API](/.doc/auth-api.md)
--->
+## Architecture & Techniques
+
+### Design Patterns
+
+- **Domain-Driven Design (DDD)**: The project is organized around business domains with separation between domain logic, application logic, and infrastructure concerns.
+  
+- **CQRS (Command Query Responsibility Segregation)**: Implemented using MediatR to separate read and write operations, improving scalability and maintainability.
+  
+- **Repository Pattern**: Abstracts data access logic, providing a separation between domain and data layers.
+  
+- **External Identities Pattern**: Used for referencing entities from other domains with denormalization of descriptions, following DDD practices.
+  
+- **Event Sourcing**: Domain events are published for key operations:
+  - `SaleCreatedEvent`
+  - `SaleModifiedEvent`
+  - `SaleCancelledEvent`
+  - `SaleItemCancelledEvent`
+
+   Events are stored in MongoDB as an example implementation. This allows for future integration with a message broker, where these events can be consumed and processed asynchronously by other services.
+
+### Frameworks & Libraries
+
+- **MediatR**: CQRS and request/response handling
+- **AutoMapper**: Object mapping
+- **FluentValidation**: Validation rules
+- **Entity Framework Core**: PostgreSQL ORM
+- **MongoDB Driver**: Event store
+- **Redis**: Distributed caching
+- **xUnit**: Unit testing
+- **NSubstitute**: Mocking
+- **Bogus (Faker)**: Test data generation
+
+
+### Database & Caching Strategy
+
+- **PostgreSQL**: Main relational database for sales data.
+- **MongoDB**: Stores domain events and supports flexible queries.
+- **Redis**: Caches frequent queries for fast API responses.
+
+   Caching with Redis is demonstrated on a single endpoint as an example.
+   
+### Additional Techniques
+
+- **Clean Architecture**: Layers are organized to depend on abstractions, with dependencies pointing inward toward the domain.
+- **Dependency Injection**: Built-in .NET DI container manages all dependencies.
+- **Validation Pipeline**: MediatR behaviors validate commands before handler execution.
+- **Health Checks**: Monitors application and database health.
+- **Structured Logging**: Comprehensive logging for debugging and monitoring.
 
 ## Project Structure
-This section describes the overall structure and organization of the project files and directories. 
 
-See [Project Structure](/.doc/project-structure.md)
+```
+src/
+├── DeveloperStore.WebApi/          # API Layer (Controllers, Middleware)
+├── DeveloperStore.Application/     # Application Layer (Use Cases, Handlers)
+├── DeveloperStore.Domain/          # Domain Layer (Entities, Value Objects, Rules)
+├── DeveloperStore.ORM/             # Infrastructure (Repositories, Migrations)
+├── DeveloperStore.IoC/             # Dependency Injection Configuration
+└── DeveloperStore.Common/          # Shared Utilities (Validation, Logging)
+
+tests/
+├── DeveloperStore.Unit/            # Unit Tests
+├── DeveloperStore.Integration/     # Integration Tests
+└── DeveloperStore.Functional/      # Functional Tests
+```
+
+## Features
+
+✅ **Sales CRUD**
+- Create sales with multiple items
+- Retrieve sales with pagination, filtering, and sorting
+- Update sale information
+- Cancel entire sales or individual items
+
+✅ **Business Logic Validation**
+- Quantity-based discount rules
+- Maximum quantity restrictions
+- Domain-driven validation
+
+✅ **Event Publishing**
+- Events logged for all major operations
+- Event store in MongoDB for audit trail
+
+✅ **RESTful API Design**
+- Standard HTTP methods and status codes
+- Consistent response formats
+- Comprehensive error handling
+
+## Business Rules
+
+The API enforces the following discount and quantity rules:
+
+| Quantity Range | Discount | Status               |
+| -------------- | -------- | -------------------- |
+| 1-3 items      | 0%       | No discount allowed  |
+| 4-9 items      | 10%      | Standard discount    |
+| 10-20 items    | 20%      | Bulk discount        |
+| 21+ items      | ❌        | Not allowed (max 20) |
+
+## Possible Improvements
+
+For a production-ready solution, consider these short-term enhancements:
+
+- Add authentication and authorization (JWT)
+- Implement API versioning
+- Expand caching to more endpoints beyond the example
+- Add integration and functional tests (test projects are scaffolded but empty)
+- Enhance Swagger documentation with request/response examples
+- Implement rate limiting to prevent API abuse
+- Connect Rebus to a real message broker (RabbitMQ/Azure Service Bus)
+- Add CI/CD pipeline for automated testing and deployment
+
