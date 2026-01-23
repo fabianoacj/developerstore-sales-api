@@ -9,10 +9,19 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ConnectionStrings__DefaultConnection=Host=developerstore_sales_database;Port=5432;Database=developerstore_sales;Username=developer;Password=ev@luAt10n
+      - MongoDB__ConnectionString=mongodb://developer:ev%40luAt10n@developerstore_sales_nosql:27017
+      - MongoDB__DatabaseName=developerstore_events
+      - MongoDB__EventsCollectionName=sales_events
+      - "Redis__ConnectionString=developerstore_sales_cache:6379,password=ev@luAt10n"
+      - "Redis__InstanceName=DeveloperStore:"
+      - Redis__DefaultExpirationMinutes=60
+      - Redis__Enabled=true
     ports:
       - "8080:8080"
     depends_on:
       - developerstore_sales_database
+      - developerstore_sales_nosql
+      - developerstore_sales_cache
 
   developerstore_sales_database:
     container_name: developerstore_sales_database
@@ -23,4 +32,22 @@ services:
       POSTGRES_PASSWORD: ev@luAt10n
     ports:
       - "5432:5432"
+    restart: unless-stopped
+  
+  developerstore_sales_nosql:
+    container_name: developerstore_sales_nosql 
+    image: mongo:8.0    
+    environment:
+        MONGO_INITDB_ROOT_USERNAME: developer
+        MONGO_INITDB_ROOT_PASSWORD: ev@luAt10n
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+
+  developerstore_sales_cache:
+    container_name: developerstore_sales_cache 
+    image: redis:7.4.1-alpine     
+    command: redis-server --requirepass ev@luAt10n
+    ports:
+      - "6379:6379"
     restart: unless-stopped
