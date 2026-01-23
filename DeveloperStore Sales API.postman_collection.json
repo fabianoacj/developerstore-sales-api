@@ -1,0 +1,459 @@
+{
+  "info": {
+    "_postman_id": "22a16c7c-bd64-406c-ad88-a09129f84cd9",
+    "name": "DeveloperStore Sales API",
+    "description": "Postman collection for testing DeveloperStore Sales API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "7465866",
+    "_collection_link": "https://go.postman.co/collection/7465866-22a16c7c-bd64-406c-ad88-a09129f84cd9?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Sales",
+      "item": [
+        {
+          "name": "Create Sale",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Generate random GUIDs for customer and branch",
+                  "pm.environment.set(\"randomCustomerId\", pm.variables.replaceIn('{{$guid}}'));",
+                  "pm.environment.set(\"randomBranchId\", pm.variables.replaceIn('{{$guid}}'));",
+                  "pm.environment.set(\"randomProductId\", pm.variables.replaceIn('{{$guid}}'));",
+                  "",
+                  "// Generate random suffix for names",
+                  "pm.environment.set(\"randomSuffix\", Math.floor(Math.random() * 10000));",
+                  "",
+                  "pm.environment.set(\"randomQuantity\", Math.floor(Math.random() * 20));",
+                  "pm.environment.set(\"randomUnitPrice\", Math.floor(Math.random() * 200));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Parse response JSON\r",
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "// Safety checks\r",
+                  "if (response && response.data) {\r",
+                  "    // Set saleId\r",
+                  "    if (response.data.id) {\r",
+                  "        pm.environment.set(\"saleId\", response.data.id);\r",
+                  "    }\r",
+                  "\r",
+                  "    // Set first saleItemId\r",
+                  "    if (Array.isArray(response.data.items) && response.data.items.length > 0) {\r",
+                  "        pm.environment.set(\"saleItemId\", response.data.items[0].id);\r",
+                  "    }\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"customerId\": \"{{randomCustomerId}}\",\n    \"customerName\": \"Customer_{{randomSuffix}}\",\n    \"customerEmail\": \"customer{{randomSuffix}}@example.com\",\n    \"customerPhone\": \"+1-555-0100\",\n    \"branchId\": \"{{randomBranchId}}\",\n    \"branchName\": \"Branch_{{randomSuffix}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{randomProductId}}\",\n            \"productTitle\": \"Product_{{randomSuffix}}\",\n            \"productCategory\": \"Electronics\",\n            \"productDescription\": \"A sample product for testing\",\n            \"quantity\": {{randomQuantity}},\n            \"unitPrice\": {{randomUnitPrice}}\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sales",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sales"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Sale by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/sales/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sales",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{saleId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Sales / with filter,sort,pagination",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/sales?_page=1&_size=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sales"
+              ],
+              "query": [
+                {
+                  "key": "_page",
+                  "value": "1"
+                },
+                {
+                  "key": "_size",
+                  "value": "10"
+                },
+                {
+                  "key": "_order",
+                  "value": "saleDate desc",
+                  "disabled": true
+                },
+                {
+                  "key": "customerId",
+                  "value": "{{randomCustomerId}}",
+                  "disabled": true
+                },
+                {
+                  "key": "branchId",
+                  "value": "{{randomBranchId}}",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "Cancelled",
+                  "disabled": true
+                },
+                {
+                  "key": "customerName",
+                  "value": "Customer*",
+                  "disabled": true
+                },
+                {
+                  "key": "_minTotalAmount",
+                  "value": "0",
+                  "disabled": true
+                },
+                {
+                  "key": "_maxTotalAmount",
+                  "value": "1000",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get all sales with optional filtering by customerId, branchId, status, date range, amount range, etc."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Sale",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"customerName\": \"Updated_Customer_{{randomSuffix}}\",\n    \"customerEmail\": \"updated{{randomSuffix}}@example.com\",\n    \"customerPhone\": \"+1-555-0199\",\n    \"items\": [\n        {\n            \"id\": \"{{saleItemId}}\",\n            \"productId\": \"{{randomProductId}}\",\n            \"productTitle\": \"Updated_Product_{{randomSuffix}}\",\n            \"productCategory\": \"Electronics\",\n            \"productDescription\": \"An updated product\",\n            \"quantity\": 3,\n            \"unitPrice\": 149.99\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sales/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sales",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{saleId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Sale Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/sales/:id/items/:itemId/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sales",
+                ":id",
+                "items",
+                ":itemId",
+                "cancel"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{saleId}}"
+                },
+                {
+                  "key": "itemId",
+                  "value": "{{saleItemId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Sale",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/sales/:id/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sales",
+                ":id",
+                "cancel"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{saleId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "Get All Events",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "packages": {},
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events?_page=1&_size=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "_page",
+                  "value": "1"
+                },
+                {
+                  "key": "_size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Retrieves all sales events from the event store with pagination"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Sale Events",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events/sales/:saleId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "sales",
+                ":saleId"
+              ],
+              "variable": [
+                {
+                  "key": "saleId",
+                  "value": "{{saleId}}"
+                }
+              ]
+            },
+            "description": "Retrieves the event timeline for a specific sale"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://localhost:7001"
+    }
+  ]
+}

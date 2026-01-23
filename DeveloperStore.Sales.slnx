@@ -19,7 +19,9 @@
     <Project Path="src/DeveloperStore.Common/DeveloperStore.Common.csproj" Id="7fdbfe1b-112b-437f-8677-37f6fbb1fb7d" />
     <Project Path="src/DeveloperStore.IoC/DeveloperStore.IoC.csproj" Id="65c1e3d5-b253-4899-8232-14ed1c991dc2" />
   </Folder>
-  <Folder Name="/Solution Items/" />
+  <Folder Name="/Solution Items/">
+    <File Path="DeveloperStore Sales API.postman_collection.json" />
+  </Folder>
   <Folder Name="/Tests/" />
   <Folder Name="/Tests/Functional/">
     <Project Path="tests/DeveloperStore.Functional/DeveloperStore.Functional.csproj" Id="98e0a167-2dd3-4873-a1ab-176bda75f934" />
