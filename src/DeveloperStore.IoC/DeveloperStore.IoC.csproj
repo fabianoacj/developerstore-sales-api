@@ -1,9 +1,26 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.8" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DeveloperStore.Domain\DeveloperStore.Domain.csproj" />
+    <ProjectReference Include="..\DeveloperStore.Application\DeveloperStore.Application.csproj" />
+    <ProjectReference Include="..\DeveloperStore.ORM\DeveloperStore.ORM.csproj" />
+    <ProjectReference Include="..\DeveloperStore.Common\DeveloperStore.Common.csproj" />
+  </ItemGroup>
 
 </Project>

@@ -19,7 +19,7 @@ public class MongoEventStore : IEventStore
     {
         _settings = settings;
         _eventsCollection = context.GetCollection<StoredEvent>(_settings.EventsCollectionName);
-        
+
         // Create indexes for better query performance
         CreateIndexes();
     }
@@ -28,15 +28,15 @@ public class MongoEventStore : IEventStore
     /// Stores a domain event in MongoDB.
     /// </summary>
     public async Task StoreAsync<TEvent>(
-        TEvent @event, 
-        Guid? aggregateId = null, 
-        string? saleNumber = null, 
+        TEvent @event,
+        Guid? aggregateId = null,
+        string? saleNumber = null,
         CancellationToken cancellationToken = default) where TEvent : class
     {
         var eventType = typeof(TEvent).Name;
-        var eventData = JsonSerializer.Serialize(@event, new JsonSerializerOptions 
-        { 
-            WriteIndented = false 
+        var eventData = JsonSerializer.Serialize(@event, new JsonSerializerOptions
+        {
+            WriteIndented = false
         });
 
         var storedEvent = new StoredEvent
@@ -55,8 +55,8 @@ public class MongoEventStore : IEventStore
     /// Retrieves all events with pagination.
     /// </summary>
     public async Task<IEnumerable<EventStoreEntry>> GetAllEventsAsync(
-        int skip = 0, 
-        int limit = 100, 
+        int skip = 0,
+        int limit = 100,
         CancellationToken cancellationToken = default)
     {
         var events = await _eventsCollection
@@ -73,11 +73,11 @@ public class MongoEventStore : IEventStore
     /// Retrieves all events for a specific sale.
     /// </summary>
     public async Task<IEnumerable<EventStoreEntry>> GetEventsBySaleIdAsync(
-        Guid saleId, 
+        Guid saleId,
         CancellationToken cancellationToken = default)
     {
         var filter = Builders<StoredEvent>.Filter.Eq(e => e.AggregateId, saleId);
-        
+
         var events = await _eventsCollection
             .Find(filter)
             .SortBy(e => e.OccurredAt)
